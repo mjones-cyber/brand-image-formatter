@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Image Formatter</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f8f7;
+    --bg-tertiary: #f1f0eb;
+    --bg-info: #e6f1fb;
+    --text-primary: #1a1a18;
+    --text-secondary: #5f5e5a;
+    --text-tertiary: #888780;
+    --text-info: #185fa5;
+    --border-light: rgba(0,0,0,0.1);
+    --border-medium: rgba(0,0,0,0.18);
+    --border-info: #378add;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1e1e1c;
+      --bg-secondary: #2a2a28;
+      --bg-tertiary: #141412;
+      --bg-info: #0c447c;
+      --text-primary: #f1f0eb;
+      --text-secondary: #b4b2a9;
+      --text-tertiary: #888780;
+      --text-info: #85b7eb;
+      --border-light: rgba(255,255,255,0.08);
+      --border-medium: rgba(255,255,255,0.15);
+      --border-info: #378add;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--bg-primary);
+    border-bottom: 0.5px solid var(--border-light);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  header h1 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  header span {
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 290px minmax(0, 1fr);
+    min-height: calc(100vh - 53px);
+  }
+
+  .sidebar {
+    background: var(--bg-primary);
+    border-right: 0.5px solid var(--border-light);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    overflow-y: auto;
+    height: calc(100vh - 53px);
+    position: sticky;
+    top: 53px;
+  }
+
+  .canvas-area {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: var(--bg-tertiary);
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+  .field label { font-size: 13px; color: var(--text-secondary); }
+
+  .field-row { display: flex; align-items: center; gap: 8px; }
+  .field-row input[type=range] { flex: 1; accent-color: var(--border-info); }
+
+  .val {
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 38px;
+    text-align: right;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .color-row { display: flex; align-items: center; gap: 8px; }
+  .color-row input[type=color] {
+    width: 34px;
+    height: 28px;
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    padding: 2px;
+    background: var(--bg-primary);
+  }
+  .color-row input[type=text] {
+    flex: 1;
+    font-size: 13px;
+    padding: 4px 8px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-light);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: monospace;
+  }
+  .color-row input[type=text]:focus { outline: none; border-color: var(--border-info); }
+
+  select {
+    font-size: 13px;
+    padding: 4px 8px;
+    height: 30px;
+    border-radius: var(--radius-md);
+    width: 100%;
+    border: 0.5px solid var(--border-light);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+  select:focus { outline: none; border-color: var(--border-info); }
+
+  .preset-strip { display: flex; gap: 6px; flex-wrap: wrap; }
+  .preset-btn {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-medium);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.12s;
+    font-family: inherit;
+  }
+  .preset-btn:hover { background: var(--bg-secondary); }
+  .preset-btn.active {
+    background: var(--bg-info);
+    color: var(--text-info);
+    border-color: var(--border-info);
+  }
+
+  .drop-zone {
+    border: 1.5px dashed var(--border-medium);
+    border-radius: var(--radius-lg);
+    padding: 3rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+    color: var(--text-secondary);
+    font-size: 14px;
+    background: var(--bg-primary);
+  }
+  .drop-zone:hover, .drop-zone.drag-over {
+    background: var(--bg-info);
+    border-color: var(--border-info);
+    color: var(--text-info);
+  }
+  .drop-zone i { font-size: 32px; display: block; margin-bottom: 10px; }
+  .drop-zone small { font-size: 12px; color: var(--text-tertiary); display: block; margin-top: 6px; }
+
+  .preview-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+  }
+
+  #outputCanvas {
+    max-width: 100%;
+    max-height: 70vh;
+    display: block;
+    border-radius: var(--radius-lg);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-medium);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    transition: background 0.12s;
+  }
+  .btn:hover { background: var(--bg-secondary); }
+  .btn.accent {
+    background: var(--bg-info);
+    color: var(--text-info);
+    border-color: var(--border-info);
+  }
+  .btn.accent:hover { opacity: 0.85; }
+
+  .divider { height: 0.5px; background: var(--border-light); }
+
+  input[type=checkbox] {
+    accent-color: var(--border-info);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+
+  @media (max-width: 700px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { height: auto; position: static; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <i class="ti ti-photo-edit" style="font-size:20px; color: var(--text-info);" aria-hidden="true"></i>
+  <h1>Brand Image Formatter</h1>
+  <span>Apply brand settings to screenshots</span>
+</header>
+
+<input type="file" id="fileInput" accept="image/*" style="display:none">
+
+<div class="app">
+  <div class="sidebar">
+
+    <div>
+      <div class="section-label">Presets</div>
+      <div class="preset-strip">
+        <button class="preset-btn active" data-preset="brand">Brand</button>
+        <button class="preset-btn" data-preset="minimal">Minimal</button>
+        <button class="preset-btn" data-preset="bold">Bold</button>
+        <button class="preset-btn" data-preset="none">None</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">Aspect ratio / crop</div>
+      <div class="field">
+        <label>Ratio</label>
+        <select id="aspectRatio">
+          <option value="free">Free (original)</option>
+          <option value="16:9">16:9</option>
+          <option value="4:3">4:3</option>
+          <option value="1:1">1:1</option>
+          <option value="3:2">3:2</option>
+          <option value="21:9">21:9</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Fit mode</label>
+        <select id="fitMode">
+          <option value="cover">Cover (fill and crop)</option>
+          <option value="contain">Contain (letterbox)</option>
+          <option value="stretch">Stretch</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">Background</div>
+      <div class="field">
+        <label>Color</label>
+        <div class="color-row">
+          <input type="color" id="bgColor" value="#ffffff">
+          <input type="text" id="bgColorHex" value="#ffffff" maxlength="7">
+        </div>
+      </div>
+      <div class="field">
+        <label>Opacity</label>
+        <div class="field-row">
+          <input type="range" id="bgOpacity" min="0" max="100" step="1" value="0">
+          <span class="val" id="bgOpacityVal">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">Padding</div>
+      <div class="field">
+        <div class="field-row">
+          <input type="range" id="padding" min="0" max="120" step="1" value="24">
+          <span class="val" id="paddingVal">24px</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">Corner rounding</div>
+      <div class="field">
+        <div class="field-row">
+          <input type="range" id="radius" min="0" max="80" step="1" value="16">
+          <span class="val" id="radiusVal">16px</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">Border</div>
+      <div class="field">
+        <label>Width</label>
+        <div class="field-row">
+          <input type="range" id="borderWidth" min="0" max="20" step="1" value="1">
+          <span class="val" id="borderWidthVal">1px</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Color</label>
+        <div class="color-row">
+          <input type="color" id="borderColor" value="#e2e8f0">
+          <input type="text" id="borderColorHex" value="#e2e8f0" maxlength="7">
+        </div>
+      </div>
+      <div class="field">
+        <label>Opacity</label>
+        <div class="field-row">
+          <input type="range" id="borderOpacity" min="0" max="100" step="1" value="100">
+          <span class="val" id="borderOpacityVal">100%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">Drop shadow</div>
+      <label class="check-row">
+        <input type="checkbox" id="shadowEnabled" checked>
+        Enable shadow
+      </label>
+      <div id="shadowControls">
+        <div class="field">
+          <label>Blur</label>
+          <div class="field-row">
+            <input type="range" id="shadowBlur" min="0" max="80" step="1" value="32">
+            <span class="val" id="shadowBlurVal">32px</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Offset Y</label>
+          <div class="field-row">
+            <input type="range" id="shadowY" min="0" max="60" step="1" value="12">
+            <span class="val" id="shadowYVal">12px</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Opacity</label>
+          <div class="field-row">
+            <input type="range" id="shadowOpacity" min="0" max="100" step="1" value="22">
+            <span class="val" id="shadowOpacityVal">22%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="canvas-area">
+    <div class="toolbar">
+      <button class="btn" id="uploadBtn"><i class="ti ti-upload" aria-hidden="true"></i> Upload image</button>
+      <button class="btn accent" id="exportBtn"><i class="ti ti-download" aria-hidden="true"></i> Export PNG</button>
+    </div>
+    <div class="preview-wrap" id="previewWrap">
+      <div class="drop-zone" id="dropZone">
+        <i class="ti ti-photo" aria-hidden="true"></i>
+        Drop a screenshot here
+        <small>or click "Upload image" above</small>
+      </div>
+      <canvas id="outputCanvas" style="display:none;"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let img = null;
+
+const presets = {
+  brand:   { radius: 16, padding: 24, borderWidth: 1, borderColor: '#e2e8f0', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: true, shadowBlur: 32, shadowY: 12, shadowOpacity: 22, aspectRatio: 'free', fitMode: 'cover' },
+  minimal: { radius: 8,  padding: 12, borderWidth: 0, borderColor: '#e2e8f0', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: false, shadowBlur: 0, shadowY: 0, shadowOpacity: 0, aspectRatio: 'free', fitMode: 'cover' },
+  bold:    { radius: 24, padding: 40, borderWidth: 3, borderColor: '#6366f1', borderOpacity: 100, bgColor: '#f0f4ff', bgOpacity: 100, shadowEnabled: true, shadowBlur: 60, shadowY: 24, shadowOpacity: 35, aspectRatio: '16:9', fitMode: 'cover' },
+  none:    { radius: 0,  padding: 0,  borderWidth: 0, borderColor: '#000000', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: false, shadowBlur: 0, shadowY: 0, shadowOpacity: 0, aspectRatio: 'free', fitMode: 'cover' },
+};
+
+function hexToRgb(hex) {
+  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r ? [parseInt(r[1],16), parseInt(r[2],16), parseInt(r[3],16)] : [0,0,0];
+}
+
+function applyPreset(name) {
+  const p = presets[name];
+  $('radius').value = p.radius; $('radiusVal').textContent = p.radius + 'px';
+  $('padding').value = p.padding; $('paddingVal').textContent = p.padding + 'px';
+  $('borderWidth').value = p.borderWidth; $('borderWidthVal').textContent = p.borderWidth + 'px';
+  $('borderColor').value = p.borderColor; $('borderColorHex').value = p.borderColor;
+  $('borderOpacity').value = p.borderOpacity; $('borderOpacityVal').textContent = p.borderOpacity + '%';
+  $('bgColor').value = p.bgColor; $('bgColorHex').value = p.bgColor;
+  $('bgOpacity').value = p.bgOpacity; $('bgOpacityVal').textContent = p.bgOpacity + '%';
+  $('shadowEnabled').checked = p.shadowEnabled;
+  $('shadowBlur').value = p.shadowBlur; $('shadowBlurVal').textContent = p.shadowBlur + 'px';
+  $('shadowY').value = p.shadowY; $('shadowYVal').textContent = p.shadowY + 'px';
+  $('shadowOpacity').value = p.shadowOpacity; $('shadowOpacityVal').textContent = p.shadowOpacity + '%';
+  $('aspectRatio').value = p.aspectRatio;
+  $('fitMode').value = p.fitMode;
+  $('shadowControls').style.opacity = p.shadowEnabled ? '1' : '0.4';
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === name));
+  render();
+}
+
+function getAspectDims(ratio, srcW, srcH) {
+  if (ratio === 'free') return [srcW, srcH];
+  const [rw, rh] = ratio.split(':').map(Number);
+  const aspect = rw / rh;
+  const srcAspect = srcW / srcH;
+  if (srcAspect > aspect) return [Math.round(srcH * aspect), srcH];
+  return [srcW, Math.round(srcW / aspect)];
+}
+
+function render() {
+  if (!img) return;
+  const canvas = $('outputCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const pad = parseInt($('padding').value);
+  const radius = parseInt($('radius').value);
+  const bw = parseInt($('borderWidth').value);
+  const shadowBlur = parseInt($('shadowBlur').value);
+  const shadowY = parseInt($('shadowY').value);
+  const shadowOn = $('shadowEnabled').checked;
+  const shadowOp = parseInt($('shadowOpacity').value) / 100;
+  const fitMode = $('fitMode').value;
+  const ratio = $('aspectRatio').value;
+  const bgHex = $('bgColor').value;
+  const bgOp = parseInt($('bgOpacity').value) / 100;
+  const borderHex = $('borderColor').value;
+  const borderOp = parseInt($('borderOpacity').value) / 100;
+
+  const [imgW, imgH] = getAspectDims(ratio, img.width, img.height);
+  const shadowPad = shadowOn ? Math.max(shadowBlur + shadowY + 8, 0) : 0;
+  const totalW = imgW + pad * 2 + bw * 2 + shadowPad * 2;
+  const totalH = imgH + pad * 2 + bw * 2 + shadowPad * 2 + (shadowOn ? shadowY : 0);
+
+  canvas.width = totalW;
+  canvas.height = totalH;
+  ctx.clearRect(0, 0, totalW, totalH);
+
+  const ox = shadowPad + bw + pad;
+  const oy = shadowPad + bw + pad;
+
+  if (bgOp > 0) {
+    const [r,g,b] = hexToRgb(bgHex);
+    ctx.fillStyle = `rgba(${r},${g},${b},${bgOp})`;
+    ctx.fillRect(0, 0, totalW, totalH);
+  }
+
+  if (shadowOn && shadowOp > 0) {
+    ctx.save();
+    ctx.shadowColor = `rgba(0,0,0,${shadowOp})`;
+    ctx.shadowBlur = shadowBlur;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = shadowY;
+    ctx.beginPath();
+    const rx = ox - pad, ry = oy - pad;
+    const rw2 = imgW + pad * 2, rh2 = imgH + pad * 2;
+    const r2 = Math.min(radius + pad * 0.4, rw2/2, rh2/2);
+    ctx.roundRect(rx, ry, rw2, rh2, r2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+    ctx.restore();
+  }
+
+  const crad = Math.min(radius, imgW/2, imgH/2);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(ox, oy, imgW, imgH, crad);
+  ctx.clip();
+
+  if (fitMode === 'cover') {
+    const scale = Math.max(imgW / img.width, imgH / img.height);
+    const sw = imgW / scale, sh = imgH / scale;
+    const sx = (img.width - sw) / 2, sy = (img.height - sh) / 2;
+    ctx.drawImage(img, sx, sy, sw, sh, ox, oy, imgW, imgH);
+  } else if (fitMode === 'contain') {
+    const scale = Math.min(imgW / img.width, imgH / img.height);
+    const dw = img.width * scale, dh = img.height * scale;
+    const dx = ox + (imgW - dw) / 2, dy = oy + (imgH - dh) / 2;
+    ctx.fillStyle = '#f8f8f8';
+    ctx.fillRect(ox, oy, imgW, imgH);
+    ctx.drawImage(img, dx, dy, dw, dh);
+  } else {
+    ctx.drawImage(img, ox, oy, imgW, imgH);
+  }
+  ctx.restore();
+
+  if (bw > 0 && borderOp > 0) {
+    const [br,bg2,bb] = hexToRgb(borderHex);
+    ctx.save();
+    ctx.beginPath();
+    const half = bw / 2;
+    ctx.roundRect(ox - half, oy - half, imgW + bw, imgH + bw, crad + half);
+    ctx.strokeStyle = `rgba(${br},${bg2},${bb},${borderOp})`;
+    ctx.lineWidth = bw;
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function loadImage(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const image = new Image();
+    image.onload = () => {
+      img = image;
+      $('dropZone').style.display = 'none';
+      $('outputCanvas').style.display = 'block';
+      render();
+    };
+    image.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+$('uploadBtn').addEventListener('click', () => $('fileInput').click());
+$('fileInput').addEventListener('change', e => { if (e.target.files[0]) loadImage(e.target.files[0]); });
+
+const dz = $('dropZone');
+dz.addEventListener('click', () => $('fileInput').click());
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
+});
+
+$('exportBtn').addEventListener('click', () => {
+  if (!img) return;
+  const a = document.createElement('a');
+  a.download = 'branded-image.png';
+  a.href = $('outputCanvas').toDataURL('image/png');
+  a.click();
+});
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+});
+
+const sliders = ['radius','padding','borderWidth','borderOpacity','bgOpacity','shadowBlur','shadowY','shadowOpacity'];
+sliders.forEach(id => {
+  $(id).addEventListener('input', () => {
+    const unit = ['bgOpacity','borderOpacity','shadowOpacity'].includes(id) ? '%' : 'px';
+    $(id + 'Val').textContent = $(id).value + unit;
+    render();
+  });
+});
+
+['bgColor','borderColor'].forEach(id => {
+  $(id).addEventListener('input', () => {
+    $(id + 'Hex').value = $(id).value;
+    render();
+  });
+  $(id + 'Hex').addEventListener('input', () => {
+    const v = $(id + 'Hex').value;
+    if (/^#[0-9a-fA-F]{6}$/.test(v)) { $(id).value = v; render(); }
+  });
+});
+
+$('shadowEnabled').addEventListener('change', () => {
+  $('shadowControls').style.opacity = $('shadowEnabled').checked ? '1' : '0.4';
+  render();
+});
+
+$('aspectRatio').addEventListener('change', render);
+$('fitMode').addEventListener('change', render);
+
+applyPreset('brand');
+</script>
+</body>
+</html>
