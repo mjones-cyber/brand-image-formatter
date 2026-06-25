@@ -360,15 +360,15 @@
       <div class="field">
         <label>Width</label>
         <div class="field-row">
-          <input type="range" id="borderWidth" min="0" max="20" step="1" value="1">
-          <span class="val" id="borderWidthVal">1px</span>
+          <input type="range" id="borderWidth" min="0" max="20" step="1" value="2">
+          <span class="val" id="borderWidthVal">2px</span>
         </div>
       </div>
       <div class="field">
         <label>Color</label>
         <div class="color-row">
-          <input type="color" id="borderColor" value="#e2e8f0">
-          <input type="text" id="borderColorHex" value="#e2e8f0" maxlength="7">
+          <input type="color" id="borderColor" value="#747579">
+          <input type="text" id="borderColorHex" value="#747579" maxlength="7">
         </div>
       </div>
       <div class="field">
@@ -392,22 +392,29 @@
         <div class="field">
           <label>Blur</label>
           <div class="field-row">
-            <input type="range" id="shadowBlur" min="0" max="80" step="1" value="32">
-            <span class="val" id="shadowBlurVal">32px</span>
+            <input type="range" id="shadowBlur" min="0" max="80" step="1" value="4">
+            <span class="val" id="shadowBlurVal">4px</span>
           </div>
         </div>
         <div class="field">
-          <label>Offset Y</label>
+          <label>Angle</label>
           <div class="field-row">
-            <input type="range" id="shadowY" min="0" max="60" step="1" value="12">
-            <span class="val" id="shadowYVal">12px</span>
+            <input type="range" id="shadowAngle" min="0" max="360" step="1" value="45">
+            <span class="val" id="shadowAngleVal">45deg</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Offset distance</label>
+          <div class="field-row">
+            <input type="range" id="shadowOffset" min="0" max="60" step="1" value="6">
+            <span class="val" id="shadowOffsetVal">6px</span>
           </div>
         </div>
         <div class="field">
           <label>Opacity</label>
           <div class="field-row">
-            <input type="range" id="shadowOpacity" min="0" max="100" step="1" value="22">
-            <span class="val" id="shadowOpacityVal">22%</span>
+            <input type="range" id="shadowOpacity" min="0" max="100" step="1" value="50">
+            <span class="val" id="shadowOpacityVal">50%</span>
           </div>
         </div>
       </div>
@@ -436,10 +443,10 @@ const $ = id => document.getElementById(id);
 let img = null;
 
 const presets = {
-  brand:   { radius: 16, padding: 24, borderWidth: 1, borderColor: '#e2e8f0', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: true, shadowBlur: 32, shadowY: 12, shadowOpacity: 22, aspectRatio: 'free', fitMode: 'cover' },
-  minimal: { radius: 8,  padding: 12, borderWidth: 0, borderColor: '#e2e8f0', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: false, shadowBlur: 0, shadowY: 0, shadowOpacity: 0, aspectRatio: 'free', fitMode: 'cover' },
-  bold:    { radius: 24, padding: 40, borderWidth: 3, borderColor: '#6366f1', borderOpacity: 100, bgColor: '#f0f4ff', bgOpacity: 100, shadowEnabled: true, shadowBlur: 60, shadowY: 24, shadowOpacity: 35, aspectRatio: '16:9', fitMode: 'cover' },
-  none:    { radius: 0,  padding: 0,  borderWidth: 0, borderColor: '#000000', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: false, shadowBlur: 0, shadowY: 0, shadowOpacity: 0, aspectRatio: 'free', fitMode: 'cover' },
+  brand:   { radius: 16, padding: 24, borderWidth: 2, borderColor: '#747579', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: true, shadowBlur: 4, shadowAngle: 45, shadowOffset: 6, shadowOpacity: 50, aspectRatio: 'free', fitMode: 'cover' },
+  minimal: { radius: 8,  padding: 12, borderWidth: 0, borderColor: '#e2e8f0', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: false, shadowBlur: 0, shadowAngle: 45, shadowOffset: 0, shadowOpacity: 0, aspectRatio: 'free', fitMode: 'cover' },
+  bold:    { radius: 24, padding: 40, borderWidth: 3, borderColor: '#6366f1', borderOpacity: 100, bgColor: '#f0f4ff', bgOpacity: 100, shadowEnabled: true, shadowBlur: 60, shadowAngle: 45, shadowOffset: 24, shadowOpacity: 35, aspectRatio: '16:9', fitMode: 'cover' },
+  none:    { radius: 0,  padding: 0,  borderWidth: 0, borderColor: '#000000', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: false, shadowBlur: 0, shadowAngle: 45, shadowOffset: 0, shadowOpacity: 0, aspectRatio: 'free', fitMode: 'cover' },
 };
 
 function hexToRgb(hex) {
@@ -458,7 +465,8 @@ function applyPreset(name) {
   $('bgOpacity').value = p.bgOpacity; $('bgOpacityVal').textContent = p.bgOpacity + '%';
   $('shadowEnabled').checked = p.shadowEnabled;
   $('shadowBlur').value = p.shadowBlur; $('shadowBlurVal').textContent = p.shadowBlur + 'px';
-  $('shadowY').value = p.shadowY; $('shadowYVal').textContent = p.shadowY + 'px';
+  $('shadowAngle').value = p.shadowAngle; $('shadowAngleVal').textContent = p.shadowAngle + 'deg';
+  $('shadowOffset').value = p.shadowOffset; $('shadowOffsetVal').textContent = p.shadowOffset + 'px';
   $('shadowOpacity').value = p.shadowOpacity; $('shadowOpacityVal').textContent = p.shadowOpacity + '%';
   $('aspectRatio').value = p.aspectRatio;
   $('fitMode').value = p.fitMode;
@@ -485,9 +493,14 @@ function render() {
   const radius = parseInt($('radius').value);
   const bw = parseInt($('borderWidth').value);
   const shadowBlur = parseInt($('shadowBlur').value);
-  const shadowY = parseInt($('shadowY').value);
+  const shadowAngle = parseInt($('shadowAngle').value);
+  const shadowOffset = parseInt($('shadowOffset').value);
   const shadowOn = $('shadowEnabled').checked;
   const shadowOp = parseInt($('shadowOpacity').value) / 100;
+
+  const angleRad = (shadowAngle * Math.PI) / 180;
+  const shadowX = Math.round(Math.cos(angleRad) * shadowOffset);
+  const shadowY = Math.round(Math.sin(angleRad) * shadowOffset);
   const fitMode = $('fitMode').value;
   const ratio = $('aspectRatio').value;
   const bgHex = $('bgColor').value;
@@ -496,9 +509,9 @@ function render() {
   const borderOp = parseInt($('borderOpacity').value) / 100;
 
   const [imgW, imgH] = getAspectDims(ratio, img.width, img.height);
-  const shadowPad = shadowOn ? Math.max(shadowBlur + shadowY + 8, 0) : 0;
+  const shadowPad = shadowOn ? Math.max(shadowBlur + Math.max(Math.abs(shadowX), Math.abs(shadowY)) + 8, 0) : 0;
   const totalW = imgW + pad * 2 + bw * 2 + shadowPad * 2;
-  const totalH = imgH + pad * 2 + bw * 2 + shadowPad * 2 + (shadowOn ? shadowY : 0);
+  const totalH = imgH + pad * 2 + bw * 2 + shadowPad * 2;
 
   canvas.width = totalW;
   canvas.height = totalH;
@@ -517,7 +530,7 @@ function render() {
     ctx.save();
     ctx.shadowColor = `rgba(0,0,0,${shadowOp})`;
     ctx.shadowBlur = shadowBlur;
-    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetX = shadowX;
     ctx.shadowOffsetY = shadowY;
     ctx.beginPath();
     const rx = ox - pad, ry = oy - pad;
@@ -606,10 +619,12 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
   btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
 });
 
-const sliders = ['radius','padding','borderWidth','borderOpacity','bgOpacity','shadowBlur','shadowY','shadowOpacity'];
+const sliders = ['radius','padding','borderWidth','borderOpacity','bgOpacity','shadowBlur','shadowAngle','shadowOffset','shadowOpacity'];
 sliders.forEach(id => {
   $(id).addEventListener('input', () => {
-    const unit = ['bgOpacity','borderOpacity','shadowOpacity'].includes(id) ? '%' : 'px';
+    const isPct = ['bgOpacity','borderOpacity','shadowOpacity'].includes(id);
+    const isDeg = id === 'shadowAngle';
+    const unit = isPct ? '%' : isDeg ? 'deg' : 'px';
     $(id + 'Val').textContent = $(id).value + unit;
     render();
   });
