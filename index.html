@@ -7,258 +7,99 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8f8f7;
-    --bg-tertiary: #f1f0eb;
-    --bg-info: #e6f1fb;
-    --text-primary: #1a1a18;
-    --text-secondary: #5f5e5a;
-    --text-tertiary: #888780;
-    --text-info: #185fa5;
-    --border-light: rgba(0,0,0,0.1);
-    --border-medium: rgba(0,0,0,0.18);
-    --border-info: #378add;
-    --radius-md: 8px;
-    --radius-lg: 12px;
+    --bg-primary: #ffffff; --bg-secondary: #f8f8f7; --bg-tertiary: #f1f0eb;
+    --bg-info: #e6f1fb; --text-primary: #1a1a18; --text-secondary: #5f5e5a;
+    --text-tertiary: #888780; --text-info: #185fa5; --border-light: rgba(0,0,0,0.1);
+    --border-medium: rgba(0,0,0,0.18); --border-info: #378add;
+    --radius-md: 8px; --radius-lg: 12px;
   }
-
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg-primary: #1e1e1c;
-      --bg-secondary: #2a2a28;
-      --bg-tertiary: #141412;
-      --bg-info: #0c447c;
-      --text-primary: #f1f0eb;
-      --text-secondary: #b4b2a9;
-      --text-tertiary: #888780;
-      --text-info: #85b7eb;
-      --border-light: rgba(255,255,255,0.08);
-      --border-medium: rgba(255,255,255,0.15);
-      --border-info: #378add;
+      --bg-primary: #1e1e1c; --bg-secondary: #2a2a28; --bg-tertiary: #141412;
+      --bg-info: #0c447c; --text-primary: #f1f0eb; --text-secondary: #b4b2a9;
+      --text-tertiary: #888780; --text-info: #85b7eb; --border-light: rgba(255,255,255,0.08);
+      --border-medium: rgba(255,255,255,0.15); --border-info: #378add;
     }
   }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-tertiary); color: var(--text-primary); min-height: 100vh; }
+  header { background: var(--bg-primary); border-bottom: 0.5px solid var(--border-light); padding: 14px 24px; display: flex; align-items: center; gap: 10px; }
+  header h1 { font-size: 16px; font-weight: 500; }
+  header span { font-size: 13px; color: var(--text-tertiary); }
+  .app { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: calc(100vh - 53px); }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    min-height: 100vh;
-  }
+  /* Sidebar */
+  .sidebar { background: var(--bg-primary); border-right: 0.5px solid var(--border-light); display: flex; flex-direction: column; overflow-y: auto; height: calc(100vh - 53px); position: sticky; top: 53px; }
+  .sidebar-top { padding: 1rem 1.25rem 0.75rem; }
 
-  header {
-    background: var(--bg-primary);
-    border-bottom: 0.5px solid var(--border-light);
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  /* Collapsible sections */
+  .section { border-bottom: 0.5px solid var(--border-light); }
+  .section-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 1.25rem; cursor: pointer; user-select: none; }
+  .section-header:hover { background: var(--bg-secondary); }
+  .section-title { font-size: 11px; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.07em; }
+  .section-chevron { font-size: 14px; color: var(--text-tertiary); transition: transform 0.2s; }
+  .section-chevron.open { transform: rotate(180deg); }
+  .section-body { padding: 10px 1.25rem 14px; display: none; }
+  .section-body.open { display: block; }
 
-  header h1 {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text-primary);
-  }
-
-  header span {
-    font-size: 13px;
-    color: var(--text-tertiary);
-  }
-
-  .app {
-    display: grid;
-    grid-template-columns: 290px minmax(0, 1fr);
-    min-height: calc(100vh - 53px);
-  }
-
-  .sidebar {
-    background: var(--bg-primary);
-    border-right: 0.5px solid var(--border-light);
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
-    overflow-y: auto;
-    height: calc(100vh - 53px);
-    position: sticky;
-    top: 53px;
-  }
-
-  .canvas-area {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background: var(--bg-tertiary);
-  }
-
-  .section-label {
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 8px;
-  }
-
-  .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
-  .field label { font-size: 13px; color: var(--text-secondary); }
-
+  /* Fields */
+  .field { display: flex; flex-direction: column; gap: 3px; margin-bottom: 9px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-size: 12px; color: var(--text-secondary); }
   .field-row { display: flex; align-items: center; gap: 8px; }
   .field-row input[type=range] { flex: 1; accent-color: var(--border-info); }
-
-  .val {
-    font-size: 12px;
-    font-weight: 500;
-    min-width: 38px;
-    text-align: right;
-    color: var(--text-primary);
-    font-variant-numeric: tabular-nums;
-  }
-
+  .val { font-size: 12px; font-weight: 500; min-width: 40px; text-align: right; color: var(--text-primary); font-variant-numeric: tabular-nums; }
   .color-row { display: flex; align-items: center; gap: 8px; }
-  .color-row input[type=color] {
-    width: 34px;
-    height: 28px;
-    border: 0.5px solid var(--border-medium);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    padding: 2px;
-    background: var(--bg-primary);
-  }
-  .color-row input[type=text] {
-    flex: 1;
-    font-size: 13px;
-    padding: 4px 8px;
-    height: 28px;
-    border-radius: var(--radius-md);
-    border: 0.5px solid var(--border-light);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-family: monospace;
-  }
+  .color-row input[type=color] { width: 32px; height: 28px; border: 0.5px solid var(--border-medium); border-radius: var(--radius-md); cursor: pointer; padding: 2px; background: var(--bg-primary); }
+  .color-row input[type=text] { flex: 1; font-size: 12px; padding: 4px 8px; height: 28px; border-radius: var(--radius-md); border: 0.5px solid var(--border-light); background: var(--bg-secondary); color: var(--text-primary); font-family: monospace; }
   .color-row input[type=text]:focus { outline: none; border-color: var(--border-info); }
-
-  select {
-    font-size: 13px;
-    padding: 4px 8px;
-    height: 30px;
-    border-radius: var(--radius-md);
-    width: 100%;
-    border: 0.5px solid var(--border-light);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-  }
+  select { font-size: 12px; padding: 4px 8px; height: 28px; border-radius: var(--radius-md); width: 100%; border: 0.5px solid var(--border-light); background: var(--bg-secondary); color: var(--text-primary); }
   select:focus { outline: none; border-color: var(--border-info); }
+  .check-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); cursor: pointer; margin-bottom: 8px; }
+  input[type=checkbox] { accent-color: var(--border-info); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
 
-  .preset-strip { display: flex; gap: 6px; flex-wrap: wrap; }
-  .preset-btn {
-    font-size: 12px;
-    padding: 4px 12px;
-    border-radius: var(--radius-md);
-    border: 0.5px solid var(--border-medium);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: background 0.12s;
-    font-family: inherit;
-  }
+  /* Presets */
+  .preset-strip { display: flex; gap: 5px; flex-wrap: wrap; }
+  .preset-btn { font-size: 12px; padding: 4px 11px; border-radius: var(--radius-md); border: 0.5px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; font-family: inherit; transition: background 0.12s; }
   .preset-btn:hover { background: var(--bg-secondary); }
-  .preset-btn.active {
-    background: var(--bg-info);
-    color: var(--text-info);
-    border-color: var(--border-info);
-  }
+  .preset-btn.active { background: var(--bg-info); color: var(--text-info); border-color: var(--border-info); }
 
-  .drop-zone {
-    border: 1.5px dashed var(--border-medium);
-    border-radius: var(--radius-lg);
-    padding: 3rem 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: background 0.12s, border-color 0.12s;
-    color: var(--text-secondary);
-    font-size: 14px;
-    background: var(--bg-primary);
-  }
-  .drop-zone:hover, .drop-zone.drag-over {
-    background: var(--bg-info);
-    border-color: var(--border-info);
-    color: var(--text-info);
-  }
+  /* Canvas area */
+  .canvas-area { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; background: var(--bg-tertiary); }
+  .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .toolbar-right { margin-left: auto; display: flex; gap: 8px; }
+  .btn { font-size: 12px; padding: 6px 12px; border-radius: var(--radius-md); border: 0.5px solid var(--border-medium); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: inherit; transition: background 0.12s; white-space: nowrap; }
+  .btn:hover { background: var(--bg-secondary); }
+  .btn.accent { background: var(--bg-info); color: var(--text-info); border-color: var(--border-info); }
+  .btn.accent:hover { opacity: 0.85; }
+  .btn.active { background: var(--bg-info); color: var(--text-info); border-color: var(--border-info); }
+  .btn.danger { color: #c0392b; border-color: rgba(192,57,43,0.3); }
+  .btn.danger:hover { background: #fff5f5; }
+
+  /* Drop zone */
+  .drop-zone { border: 1.5px dashed var(--border-medium); border-radius: var(--radius-lg); padding: 3rem 1.5rem; text-align: center; cursor: pointer; color: var(--text-secondary); font-size: 14px; background: var(--bg-primary); transition: background 0.12s, border-color 0.12s; }
+  .drop-zone:hover, .drop-zone.drag-over { background: var(--bg-info); border-color: var(--border-info); color: var(--text-info); }
   .drop-zone i { font-size: 32px; display: block; margin-bottom: 10px; }
   .drop-zone small { font-size: 12px; color: var(--text-tertiary); display: block; margin-top: 6px; }
 
-  .preview-wrap {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-  }
+  /* Annotation canvas wrapper */
+  .preview-wrap { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 400px; }
+  .canvas-stack { position: relative; display: inline-block; line-height: 0; }
+  #outputCanvas { display: block; max-width: 100%; max-height: 68vh; border-radius: var(--radius-lg); }
+  #annotationCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: var(--radius-lg); }
 
-  #outputCanvas {
-    max-width: 100%;
-    max-height: 70vh;
-    display: block;
-    border-radius: var(--radius-lg);
-  }
+  /* Annotation panel */
+  .anno-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 0; border-bottom: 0.5px solid var(--border-light); font-size: 12px; color: var(--text-secondary); }
+  .anno-row:last-child { border-bottom: none; }
+  .anno-row-label { flex: 1; }
+  .anno-row-actions { display: flex; gap: 4px; }
+  .anno-icon-btn { background: none; border: none; cursor: pointer; color: var(--text-tertiary); padding: 2px 4px; border-radius: 4px; font-size: 15px; display: flex; align-items: center; }
+  .anno-icon-btn:hover { background: var(--bg-secondary); color: var(--text-primary); }
+  .anno-icon-btn.selected { color: var(--text-info); }
+  #annoList { margin-top: 8px; max-height: 140px; overflow-y: auto; }
+  .empty-anno { font-size: 12px; color: var(--text-tertiary); text-align: center; padding: 8px 0; }
 
-  .toolbar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: flex-end;
-  }
-
-  .btn {
-    font-size: 13px;
-    padding: 7px 14px;
-    border-radius: var(--radius-md);
-    border: 0.5px solid var(--border-medium);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: inherit;
-    transition: background 0.12s;
-  }
-  .btn:hover { background: var(--bg-secondary); }
-  .btn.accent {
-    background: var(--bg-info);
-    color: var(--text-info);
-    border-color: var(--border-info);
-  }
-  .btn.accent:hover { opacity: 0.85; }
-
-  .divider { height: 0.5px; background: var(--border-light); }
-
-  input[type=checkbox] {
-    accent-color: var(--border-info);
-    width: 15px;
-    height: 15px;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-
-  .check-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    margin-bottom: 8px;
-  }
-
-  @media (max-width: 700px) {
-    .app { grid-template-columns: 1fr; }
-    .sidebar { height: auto; position: static; }
-  }
+  @media (max-width: 700px) { .app { grid-template-columns: 1fr; } .sidebar { height: auto; position: static; } }
 </style>
 </head>
 <body>
@@ -274,8 +115,8 @@
 <div class="app">
   <div class="sidebar">
 
-    <div>
-      <div class="section-label">Presets</div>
+    <div class="sidebar-top">
+      <div style="font-size:11px; color:var(--text-tertiary); margin-bottom:8px; font-weight:500; text-transform:uppercase; letter-spacing:.07em;">Presets</div>
       <div class="preset-strip">
         <button class="preset-btn active" data-preset="brand">Brand</button>
         <button class="preset-btn" data-preset="minimal">Minimal</button>
@@ -284,139 +125,184 @@
       </div>
     </div>
 
-    <div class="divider"></div>
-
-    <div>
-      <div class="section-label">Aspect ratio / crop</div>
-      <div class="field">
-        <label>Ratio</label>
-        <select id="aspectRatio">
-          <option value="free">Free (original)</option>
-          <option value="16:9">16:9</option>
-          <option value="4:3">4:3</option>
-          <option value="1:1">1:1</option>
-          <option value="3:2">3:2</option>
-          <option value="21:9">21:9</option>
-        </select>
+    <div class="section">
+      <div class="section-header" data-section="crop">
+        <span class="section-title">Aspect ratio / crop</span>
+        <i class="ti ti-chevron-down section-chevron open"></i>
       </div>
-      <div class="field">
-        <label>Fit mode</label>
-        <select id="fitMode">
-          <option value="cover">Cover (fill and crop)</option>
-          <option value="contain">Contain (letterbox)</option>
-          <option value="stretch">Stretch</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div>
-      <div class="section-label">Background</div>
-      <div class="field">
-        <label>Color</label>
-        <div class="color-row">
-          <input type="color" id="bgColor" value="#ffffff">
-          <input type="text" id="bgColorHex" value="#ffffff" maxlength="7">
-        </div>
-      </div>
-      <div class="field">
-        <label>Opacity</label>
-        <div class="field-row">
-          <input type="range" id="bgOpacity" min="0" max="100" step="1" value="0">
-          <span class="val" id="bgOpacityVal">0%</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div>
-      <div class="section-label">Padding</div>
-      <div class="field">
-        <div class="field-row">
-          <input type="range" id="padding" min="0" max="120" step="1" value="24">
-          <span class="val" id="paddingVal">24px</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div>
-      <div class="section-label">Corner rounding</div>
-      <div class="field">
-        <div class="field-row">
-          <input type="range" id="radius" min="0" max="80" step="1" value="16">
-          <span class="val" id="radiusVal">16px</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div>
-      <div class="section-label">Border</div>
-      <div class="field">
-        <label>Width</label>
-        <div class="field-row">
-          <input type="range" id="borderWidth" min="0" max="20" step="1" value="2">
-          <span class="val" id="borderWidthVal">2px</span>
-        </div>
-      </div>
-      <div class="field">
-        <label>Color</label>
-        <div class="color-row">
-          <input type="color" id="borderColor" value="#747579">
-          <input type="text" id="borderColorHex" value="#747579" maxlength="7">
-        </div>
-      </div>
-      <div class="field">
-        <label>Opacity</label>
-        <div class="field-row">
-          <input type="range" id="borderOpacity" min="0" max="100" step="1" value="100">
-          <span class="val" id="borderOpacityVal">100%</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div>
-      <div class="section-label">Drop shadow</div>
-      <label class="check-row">
-        <input type="checkbox" id="shadowEnabled" checked>
-        Enable shadow
-      </label>
-      <div id="shadowControls">
+      <div class="section-body open" id="sec-crop">
         <div class="field">
-          <label>Blur</label>
-          <div class="field-row">
-            <input type="range" id="shadowBlur" min="0" max="80" step="1" value="4">
-            <span class="val" id="shadowBlurVal">4px</span>
-          </div>
+          <label>Ratio</label>
+          <select id="aspectRatio">
+            <option value="free">Free (original)</option>
+            <option value="16:9">16:9</option>
+            <option value="4:3">4:3</option>
+            <option value="1:1">1:1</option>
+            <option value="3:2">3:2</option>
+            <option value="21:9">21:9</option>
+          </select>
         </div>
         <div class="field">
-          <label>Angle</label>
-          <div class="field-row">
-            <input type="range" id="shadowAngle" min="0" max="360" step="1" value="45">
-            <span class="val" id="shadowAngleVal">45deg</span>
-          </div>
+          <label>Fit mode</label>
+          <select id="fitMode">
+            <option value="cover">Cover (fill and crop)</option>
+            <option value="contain">Contain (letterbox)</option>
+            <option value="stretch">Stretch</option>
+          </select>
         </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header" data-section="bg">
+        <span class="section-title">Background</span>
+        <i class="ti ti-chevron-down section-chevron open"></i>
+      </div>
+      <div class="section-body open" id="sec-bg">
         <div class="field">
-          <label>Offset distance</label>
-          <div class="field-row">
-            <input type="range" id="shadowOffset" min="0" max="60" step="1" value="6">
-            <span class="val" id="shadowOffsetVal">6px</span>
+          <label>Color</label>
+          <div class="color-row">
+            <input type="color" id="bgColor" value="#ffffff">
+            <input type="text" id="bgColorHex" value="#ffffff" maxlength="7">
           </div>
         </div>
         <div class="field">
           <label>Opacity</label>
           <div class="field-row">
-            <input type="range" id="shadowOpacity" min="0" max="100" step="1" value="50">
-            <span class="val" id="shadowOpacityVal">50%</span>
+            <input type="range" id="bgOpacity" min="0" max="100" step="1" value="0">
+            <span class="val" id="bgOpacityVal">0%</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header" data-section="padding">
+        <span class="section-title">Padding</span>
+        <i class="ti ti-chevron-down section-chevron open"></i>
+      </div>
+      <div class="section-body open" id="sec-padding">
+        <div class="field">
+          <div class="field-row">
+            <input type="range" id="padding" min="0" max="120" step="1" value="24">
+            <span class="val" id="paddingVal">24px</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header" data-section="radius">
+        <span class="section-title">Corner rounding</span>
+        <i class="ti ti-chevron-down section-chevron open"></i>
+      </div>
+      <div class="section-body open" id="sec-radius">
+        <div class="field">
+          <div class="field-row">
+            <input type="range" id="radius" min="0" max="80" step="1" value="16">
+            <span class="val" id="radiusVal">16px</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header" data-section="border">
+        <span class="section-title">Border</span>
+        <i class="ti ti-chevron-down section-chevron open"></i>
+      </div>
+      <div class="section-body open" id="sec-border">
+        <div class="field">
+          <label>Width</label>
+          <div class="field-row">
+            <input type="range" id="borderWidth" min="0" max="20" step="1" value="2">
+            <span class="val" id="borderWidthVal">2px</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Color</label>
+          <div class="color-row">
+            <input type="color" id="borderColor" value="#747579">
+            <input type="text" id="borderColorHex" value="#747579" maxlength="7">
+          </div>
+        </div>
+        <div class="field">
+          <label>Opacity</label>
+          <div class="field-row">
+            <input type="range" id="borderOpacity" min="0" max="100" step="1" value="100">
+            <span class="val" id="borderOpacityVal">100%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header" data-section="shadow">
+        <span class="section-title">Drop shadow</span>
+        <i class="ti ti-chevron-down section-chevron open"></i>
+      </div>
+      <div class="section-body open" id="sec-shadow">
+        <label class="check-row">
+          <input type="checkbox" id="shadowEnabled" checked>
+          Enable shadow
+        </label>
+        <div id="shadowControls">
+          <div class="field">
+            <label>Blur</label>
+            <div class="field-row">
+              <input type="range" id="shadowBlur" min="0" max="80" step="1" value="4">
+              <span class="val" id="shadowBlurVal">4px</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Angle</label>
+            <div class="field-row">
+              <input type="range" id="shadowAngle" min="0" max="360" step="1" value="45">
+              <span class="val" id="shadowAngleVal">45deg</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Offset distance</label>
+            <div class="field-row">
+              <input type="range" id="shadowOffset" min="0" max="60" step="1" value="6">
+              <span class="val" id="shadowOffsetVal">6px</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Opacity</label>
+            <div class="field-row">
+              <input type="range" id="shadowOpacity" min="0" max="100" step="1" value="50">
+              <span class="val" id="shadowOpacityVal">50%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header" data-section="anno">
+        <span class="section-title">Annotations</span>
+        <i class="ti ti-chevron-down section-chevron open"></i>
+      </div>
+      <div class="section-body open" id="sec-anno">
+        <div class="field">
+          <label>Stroke color</label>
+          <div class="color-row">
+            <input type="color" id="annoColor" value="#FF0000">
+            <input type="text" id="annoColorHex" value="#FF0000" maxlength="7">
+          </div>
+        </div>
+        <div class="field">
+          <label>Stroke width</label>
+          <div class="field-row">
+            <input type="range" id="annoStroke" min="1" max="20" step="1" value="4">
+            <span class="val" id="annoStrokeVal">4px</span>
+          </div>
+        </div>
+        <button class="btn active" id="drawModeBtn" style="width:100%; justify-content:center; margin-bottom:8px;">
+          <i class="ti ti-rectangle" aria-hidden="true"></i> Draw rectangle
+        </button>
+        <div id="annoList"><div class="empty-anno">No annotations yet</div></div>
       </div>
     </div>
 
@@ -425,7 +311,10 @@
   <div class="canvas-area">
     <div class="toolbar">
       <button class="btn" id="uploadBtn"><i class="ti ti-upload" aria-hidden="true"></i> Upload image</button>
-      <button class="btn accent" id="exportBtn"><i class="ti ti-download" aria-hidden="true"></i> Export PNG</button>
+      <div class="toolbar-right">
+        <button class="btn" id="clearAnnoBtn"><i class="ti ti-trash" aria-hidden="true"></i> Clear annotations</button>
+        <button class="btn accent" id="exportBtn"><i class="ti ti-download" aria-hidden="true"></i> Export PNG</button>
+      </div>
     </div>
     <div class="preview-wrap" id="previewWrap">
       <div class="drop-zone" id="dropZone">
@@ -433,7 +322,10 @@
         Drop a screenshot here
         <small>or click "Upload image" above</small>
       </div>
-      <canvas id="outputCanvas" style="display:none;"></canvas>
+      <div class="canvas-stack" id="canvasStack" style="display:none;">
+        <canvas id="outputCanvas"></canvas>
+        <canvas id="annotationCanvas"></canvas>
+      </div>
     </div>
   </div>
 </div>
@@ -442,11 +334,12 @@
 const $ = id => document.getElementById(id);
 let img = null;
 
+// --- Presets ---
 const presets = {
-  brand:   { radius: 16, padding: 24, borderWidth: 2, borderColor: '#747579', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: true, shadowBlur: 4, shadowAngle: 45, shadowOffset: 6, shadowOpacity: 50, aspectRatio: 'free', fitMode: 'cover' },
-  minimal: { radius: 8,  padding: 12, borderWidth: 0, borderColor: '#e2e8f0', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: false, shadowBlur: 0, shadowAngle: 45, shadowOffset: 0, shadowOpacity: 0, aspectRatio: 'free', fitMode: 'cover' },
-  bold:    { radius: 24, padding: 40, borderWidth: 3, borderColor: '#6366f1', borderOpacity: 100, bgColor: '#f0f4ff', bgOpacity: 100, shadowEnabled: true, shadowBlur: 60, shadowAngle: 45, shadowOffset: 24, shadowOpacity: 35, aspectRatio: '16:9', fitMode: 'cover' },
-  none:    { radius: 0,  padding: 0,  borderWidth: 0, borderColor: '#000000', borderOpacity: 100, bgColor: '#ffffff', bgOpacity: 0, shadowEnabled: false, shadowBlur: 0, shadowAngle: 45, shadowOffset: 0, shadowOpacity: 0, aspectRatio: 'free', fitMode: 'cover' },
+  brand:   { radius:16, padding:24, borderWidth:2, borderColor:'#747579', borderOpacity:100, bgColor:'#ffffff', bgOpacity:0, shadowEnabled:true, shadowBlur:4, shadowAngle:45, shadowOffset:6, shadowOpacity:50, aspectRatio:'free', fitMode:'cover' },
+  minimal: { radius:8,  padding:12, borderWidth:0, borderColor:'#e2e8f0', borderOpacity:100, bgColor:'#ffffff', bgOpacity:0, shadowEnabled:false, shadowBlur:0, shadowAngle:45, shadowOffset:0, shadowOpacity:0, aspectRatio:'free', fitMode:'cover' },
+  bold:    { radius:24, padding:40, borderWidth:3, borderColor:'#6366f1', borderOpacity:100, bgColor:'#f0f4ff', bgOpacity:100, shadowEnabled:true, shadowBlur:60, shadowAngle:45, shadowOffset:24, shadowOpacity:35, aspectRatio:'16:9', fitMode:'cover' },
+  none:    { radius:0,  padding:0,  borderWidth:0, borderColor:'#000000', borderOpacity:100, bgColor:'#ffffff', bgOpacity:0, shadowEnabled:false, shadowBlur:0, shadowAngle:45, shadowOffset:0, shadowOpacity:0, aspectRatio:'free', fitMode:'cover' },
 };
 
 function hexToRgb(hex) {
@@ -456,39 +349,45 @@ function hexToRgb(hex) {
 
 function applyPreset(name) {
   const p = presets[name];
-  $('radius').value = p.radius; $('radiusVal').textContent = p.radius + 'px';
-  $('padding').value = p.padding; $('paddingVal').textContent = p.padding + 'px';
-  $('borderWidth').value = p.borderWidth; $('borderWidthVal').textContent = p.borderWidth + 'px';
+  const set = (id, val, unit) => { $(id).value = val; if ($(id+'Val')) $(id+'Val').textContent = val + unit; };
+  set('radius', p.radius, 'px'); set('padding', p.padding, 'px');
+  set('borderWidth', p.borderWidth, 'px'); set('borderOpacity', p.borderOpacity, '%');
+  set('bgOpacity', p.bgOpacity, '%');
+  set('shadowBlur', p.shadowBlur, 'px'); set('shadowAngle', p.shadowAngle, 'deg');
+  set('shadowOffset', p.shadowOffset, 'px'); set('shadowOpacity', p.shadowOpacity, '%');
   $('borderColor').value = p.borderColor; $('borderColorHex').value = p.borderColor;
-  $('borderOpacity').value = p.borderOpacity; $('borderOpacityVal').textContent = p.borderOpacity + '%';
   $('bgColor').value = p.bgColor; $('bgColorHex').value = p.bgColor;
-  $('bgOpacity').value = p.bgOpacity; $('bgOpacityVal').textContent = p.bgOpacity + '%';
   $('shadowEnabled').checked = p.shadowEnabled;
-  $('shadowBlur').value = p.shadowBlur; $('shadowBlurVal').textContent = p.shadowBlur + 'px';
-  $('shadowAngle').value = p.shadowAngle; $('shadowAngleVal').textContent = p.shadowAngle + 'deg';
-  $('shadowOffset').value = p.shadowOffset; $('shadowOffsetVal').textContent = p.shadowOffset + 'px';
-  $('shadowOpacity').value = p.shadowOpacity; $('shadowOpacityVal').textContent = p.shadowOpacity + '%';
-  $('aspectRatio').value = p.aspectRatio;
-  $('fitMode').value = p.fitMode;
   $('shadowControls').style.opacity = p.shadowEnabled ? '1' : '0.4';
+  $('aspectRatio').value = p.aspectRatio; $('fitMode').value = p.fitMode;
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === name));
   render();
 }
 
+// --- Collapsible sections ---
+document.querySelectorAll('.section-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const key = header.dataset.section;
+    const body = $('sec-' + key);
+    const chevron = header.querySelector('.section-chevron');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    chevron.classList.toggle('open', !isOpen);
+  });
+});
+
+// --- Image rendering ---
 function getAspectDims(ratio, srcW, srcH) {
   if (ratio === 'free') return [srcW, srcH];
   const [rw, rh] = ratio.split(':').map(Number);
   const aspect = rw / rh;
-  const srcAspect = srcW / srcH;
-  if (srcAspect > aspect) return [Math.round(srcH * aspect), srcH];
-  return [srcW, Math.round(srcW / aspect)];
+  return srcW / srcH > aspect ? [Math.round(srcH * aspect), srcH] : [srcW, Math.round(srcW / aspect)];
 }
 
 function render() {
   if (!img) return;
   const canvas = $('outputCanvas');
   const ctx = canvas.getContext('2d');
-
   const pad = parseInt($('padding').value);
   const radius = parseInt($('radius').value);
   const bw = parseInt($('borderWidth').value);
@@ -497,88 +396,291 @@ function render() {
   const shadowOffset = parseInt($('shadowOffset').value);
   const shadowOn = $('shadowEnabled').checked;
   const shadowOp = parseInt($('shadowOpacity').value) / 100;
-
-  const angleRad = (shadowAngle * Math.PI) / 180;
-  const shadowX = Math.round(Math.cos(angleRad) * shadowOffset);
-  const shadowY = Math.round(Math.sin(angleRad) * shadowOffset);
   const fitMode = $('fitMode').value;
   const ratio = $('aspectRatio').value;
   const bgHex = $('bgColor').value;
   const bgOp = parseInt($('bgOpacity').value) / 100;
   const borderHex = $('borderColor').value;
   const borderOp = parseInt($('borderOpacity').value) / 100;
-
+  const angleRad = (shadowAngle * Math.PI) / 180;
+  const shadowX = Math.round(Math.cos(angleRad) * shadowOffset);
+  const shadowY = Math.round(Math.sin(angleRad) * shadowOffset);
   const [imgW, imgH] = getAspectDims(ratio, img.width, img.height);
   const shadowPad = shadowOn ? Math.max(shadowBlur + Math.max(Math.abs(shadowX), Math.abs(shadowY)) + 8, 0) : 0;
-  const totalW = imgW + pad * 2 + bw * 2 + shadowPad * 2;
-  const totalH = imgH + pad * 2 + bw * 2 + shadowPad * 2;
-
-  canvas.width = totalW;
-  canvas.height = totalH;
-  ctx.clearRect(0, 0, totalW, totalH);
-
-  const ox = shadowPad + bw + pad;
-  const oy = shadowPad + bw + pad;
-
+  canvas.width  = imgW + pad*2 + bw*2 + shadowPad*2;
+  canvas.height = imgH + pad*2 + bw*2 + shadowPad*2;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const ox = shadowPad + bw + pad, oy = shadowPad + bw + pad;
   if (bgOp > 0) {
     const [r,g,b] = hexToRgb(bgHex);
     ctx.fillStyle = `rgba(${r},${g},${b},${bgOp})`;
-    ctx.fillRect(0, 0, totalW, totalH);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
-
   if (shadowOn && shadowOp > 0) {
     ctx.save();
     ctx.shadowColor = `rgba(0,0,0,${shadowOp})`;
-    ctx.shadowBlur = shadowBlur;
-    ctx.shadowOffsetX = shadowX;
-    ctx.shadowOffsetY = shadowY;
+    ctx.shadowBlur = shadowBlur; ctx.shadowOffsetX = shadowX; ctx.shadowOffsetY = shadowY;
     ctx.beginPath();
-    const rx = ox - pad, ry = oy - pad;
-    const rw2 = imgW + pad * 2, rh2 = imgH + pad * 2;
-    const r2 = Math.min(radius + pad * 0.4, rw2/2, rh2/2);
-    ctx.roundRect(rx, ry, rw2, rh2, r2);
-    ctx.fillStyle = '#fff';
-    ctx.fill();
-    ctx.restore();
+    const r2 = Math.min(radius + pad*0.4, (imgW+pad*2)/2, (imgH+pad*2)/2);
+    ctx.roundRect(ox-pad, oy-pad, imgW+pad*2, imgH+pad*2, r2);
+    ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
   }
-
   const crad = Math.min(radius, imgW/2, imgH/2);
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.roundRect(ox, oy, imgW, imgH, crad);
-  ctx.clip();
-
+  ctx.save(); ctx.beginPath(); ctx.roundRect(ox, oy, imgW, imgH, crad); ctx.clip();
   if (fitMode === 'cover') {
-    const scale = Math.max(imgW / img.width, imgH / img.height);
-    const sw = imgW / scale, sh = imgH / scale;
-    const sx = (img.width - sw) / 2, sy = (img.height - sh) / 2;
-    ctx.drawImage(img, sx, sy, sw, sh, ox, oy, imgW, imgH);
+    const scale = Math.max(imgW/img.width, imgH/img.height);
+    const sw = imgW/scale, sh = imgH/scale;
+    ctx.drawImage(img, (img.width-sw)/2, (img.height-sh)/2, sw, sh, ox, oy, imgW, imgH);
   } else if (fitMode === 'contain') {
-    const scale = Math.min(imgW / img.width, imgH / img.height);
-    const dw = img.width * scale, dh = img.height * scale;
-    const dx = ox + (imgW - dw) / 2, dy = oy + (imgH - dh) / 2;
-    ctx.fillStyle = '#f8f8f8';
-    ctx.fillRect(ox, oy, imgW, imgH);
-    ctx.drawImage(img, dx, dy, dw, dh);
+    const scale = Math.min(imgW/img.width, imgH/img.height);
+    const dw = img.width*scale, dh = img.height*scale;
+    ctx.fillStyle = '#f8f8f8'; ctx.fillRect(ox, oy, imgW, imgH);
+    ctx.drawImage(img, ox+(imgW-dw)/2, oy+(imgH-dh)/2, dw, dh);
   } else {
     ctx.drawImage(img, ox, oy, imgW, imgH);
   }
   ctx.restore();
-
   if (bw > 0 && borderOp > 0) {
     const [br,bg2,bb] = hexToRgb(borderHex);
-    ctx.save();
-    ctx.beginPath();
-    const half = bw / 2;
-    ctx.roundRect(ox - half, oy - half, imgW + bw, imgH + bw, crad + half);
-    ctx.strokeStyle = `rgba(${br},${bg2},${bb},${borderOp})`;
-    ctx.lineWidth = bw;
-    ctx.stroke();
-    ctx.restore();
+    ctx.save(); ctx.beginPath();
+    ctx.roundRect(ox-bw/2, oy-bw/2, imgW+bw, imgH+bw, crad+bw/2);
+    ctx.strokeStyle = `rgba(${br},${bg2},${bb},${borderOp})`; ctx.lineWidth = bw; ctx.stroke(); ctx.restore();
+  }
+  syncAnnotationCanvas();
+  drawAnnotations();
+}
+
+// --- Annotation system ---
+let annotations = [];   // {x,y,w,h, color, stroke} — in output canvas pixel coords
+let selectedAnno = -1;
+let drawMode = true;
+let isDragging = false, isResizing = false, isDrawing = false;
+let dragStart = {x:0,y:0}, dragOffset = {x:0,y:0};
+let resizeHandle = null;
+const HANDLE_SIZE = 8;
+
+const annoCanvas = $('annotationCanvas');
+const annoCtx = annoCanvas.getContext('2d');
+
+function syncAnnotationCanvas() {
+  const out = $('outputCanvas');
+  annoCanvas.width = out.width;
+  annoCanvas.height = out.height;
+}
+
+function scale() {
+  const out = $('outputCanvas');
+  return { sx: out.width / annoCanvas.offsetWidth, sy: out.height / annoCanvas.offsetHeight };
+}
+
+function canvasPos(e) {
+  const rect = annoCanvas.getBoundingClientRect();
+  const s = scale();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return { x: (clientX - rect.left) * s.sx, y: (clientY - rect.top) * s.sy };
+}
+
+function getHandles(a) {
+  const {x,y,w,h} = normalizeRect(a);
+  return [
+    {id:'tl', cx:x,   cy:y},   {id:'tr', cx:x+w, cy:y},
+    {id:'bl', cx:x,   cy:y+h}, {id:'br', cx:x+w, cy:y+h},
+    {id:'tm', cx:x+w/2, cy:y}, {id:'bm', cx:x+w/2, cy:y+h},
+    {id:'ml', cx:x,   cy:y+h/2}, {id:'mr', cx:x+w, cy:y+h/2},
+  ];
+}
+
+function normalizeRect(a) {
+  return { x: Math.min(a.x, a.x+a.w), y: Math.min(a.y, a.y+a.h), w: Math.abs(a.w), h: Math.abs(a.h) };
+}
+
+function hitHandle(pos, a) {
+  for (const h of getHandles(a)) {
+    if (Math.abs(pos.x - h.cx) <= HANDLE_SIZE && Math.abs(pos.y - h.cy) <= HANDLE_SIZE) return h.id;
+  }
+  return null;
+}
+
+function hitAnno(pos, a) {
+  const {x,y,w,h} = normalizeRect(a);
+  return pos.x >= x && pos.x <= x+w && pos.y >= y && pos.y <= y+h;
+}
+
+function drawAnnotations() {
+  annoCtx.clearRect(0, 0, annoCanvas.width, annoCanvas.height);
+  annotations.forEach((a, i) => {
+    const {x,y,w,h} = normalizeRect(a);
+    annoCtx.save();
+    annoCtx.strokeStyle = a.color;
+    annoCtx.lineWidth = a.stroke;
+    annoCtx.strokeRect(x, y, w, h);
+    if (i === selectedAnno) {
+      annoCtx.fillStyle = a.color + '18';
+      annoCtx.fillRect(x, y, w, h);
+      getHandles(a).forEach(hh => {
+        annoCtx.fillStyle = '#fff';
+        annoCtx.strokeStyle = a.color;
+        annoCtx.lineWidth = 1.5;
+        annoCtx.fillRect(hh.cx - HANDLE_SIZE/2, hh.cy - HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE);
+        annoCtx.strokeRect(hh.cx - HANDLE_SIZE/2, hh.cy - HANDLE_SIZE/2, HANDLE_SIZE, HANDLE_SIZE);
+      });
+    }
+    annoCtx.restore();
+  });
+}
+
+function updateAnnoList() {
+  const list = $('annoList');
+  if (annotations.length === 0) { list.innerHTML = '<div class="empty-anno">No annotations yet</div>'; return; }
+  list.innerHTML = annotations.map((a, i) => `
+    <div class="anno-row">
+      <span style="display:inline-block;width:12px;height:12px;border:2px solid ${a.color};border-radius:2px;margin-right:6px;vertical-align:middle;"></span>
+      <span class="anno-row-label">Box ${i+1}</span>
+      <span class="anno-row-actions">
+        <button class="anno-icon-btn ${i===selectedAnno?'selected':''}" onclick="selectAnno(${i})" title="Select"><i class="ti ti-cursor-text"></i></button>
+        <button class="anno-icon-btn danger" onclick="deleteAnno(${i})" title="Delete"><i class="ti ti-trash" style="font-size:13px"></i></button>
+      </span>
+    </div>`).join('');
+}
+
+function selectAnno(i) { selectedAnno = i; drawAnnotations(); updateAnnoList(); }
+window.selectAnno = selectAnno;
+
+function deleteAnno(i) {
+  annotations.splice(i, 1);
+  if (selectedAnno >= annotations.length) selectedAnno = annotations.length - 1;
+  drawAnnotations(); updateAnnoList();
+}
+window.deleteAnno = deleteAnno;
+
+// Mouse/touch events on annotation canvas
+annoCanvas.addEventListener('mousedown', onDown);
+annoCanvas.addEventListener('mousemove', onMove);
+annoCanvas.addEventListener('mouseup', onUp);
+annoCanvas.addEventListener('mouseleave', onUp);
+
+function onDown(e) {
+  if (!img) return;
+  e.preventDefault();
+  const pos = canvasPos(e);
+
+  // Check if clicking a handle on selected anno
+  if (selectedAnno >= 0) {
+    const h = hitHandle(pos, annotations[selectedAnno]);
+    if (h) { isResizing = true; resizeHandle = h; dragStart = pos; return; }
+  }
+
+  // Check if clicking inside an existing anno
+  for (let i = annotations.length - 1; i >= 0; i--) {
+    if (hitAnno(pos, annotations[i])) {
+      selectedAnno = i; isDragging = true;
+      const {x,y} = normalizeRect(annotations[i]);
+      dragOffset = { x: pos.x - x, y: pos.y - y };
+      drawAnnotations(); updateAnnoList(); return;
+    }
+  }
+
+  // Draw new rect
+  if (drawMode) {
+    selectedAnno = -1;
+    isDrawing = true;
+    dragStart = pos;
+    const color = $('annoColor').value;
+    const stroke = parseInt($('annoStroke').value);
+    annotations.push({ x: pos.x, y: pos.y, w: 0, h: 0, color, stroke });
+    selectedAnno = annotations.length - 1;
+  } else {
+    selectedAnno = -1;
+    drawAnnotations(); updateAnnoList();
   }
 }
 
+function onMove(e) {
+  if (!img) return;
+  const pos = canvasPos(e);
+
+  if (isDrawing) {
+    const a = annotations[selectedAnno];
+    a.w = pos.x - dragStart.x; a.h = pos.y - dragStart.y;
+    drawAnnotations(); return;
+  }
+
+  if (isDragging && selectedAnno >= 0) {
+    const a = annotations[selectedAnno];
+    const {w,h} = normalizeRect(a);
+    a.x = pos.x - dragOffset.x; a.y = pos.y - dragOffset.y;
+    a.w = w; a.h = h;
+    drawAnnotations(); return;
+  }
+
+  if (isResizing && selectedAnno >= 0) {
+    const a = annotations[selectedAnno];
+    const {x,y,w,h} = normalizeRect(a);
+    const dx = pos.x - dragStart.x, dy = pos.y - dragStart.y;
+    dragStart = pos;
+    if (resizeHandle.includes('r')) a.w = w + dx;
+    if (resizeHandle.includes('l')) { a.x = x + dx; a.w = w - dx; }
+    if (resizeHandle.includes('b')) a.h = h + dy;
+    if (resizeHandle.includes('t')) { a.y = y + dy; a.h = h - dy; }
+    if (resizeHandle === 'mr') a.w = w + dx;
+    if (resizeHandle === 'ml') { a.x = x + dx; a.w = w - dx; }
+    if (resizeHandle === 'bm') a.h = h + dy;
+    if (resizeHandle === 'tm') { a.y = y + dy; a.h = h - dy; }
+    drawAnnotations(); return;
+  }
+
+  // Cursor hints
+  if (selectedAnno >= 0) {
+    const h = hitHandle(pos, annotations[selectedAnno]);
+    if (h) { annoCanvas.style.cursor = h === 'tl' || h === 'br' ? 'nwse-resize' : h === 'tr' || h === 'bl' ? 'nesw-resize' : h === 'tm' || h === 'bm' ? 'ns-resize' : 'ew-resize'; return; }
+  }
+  for (let i = annotations.length-1; i >= 0; i--) {
+    if (hitAnno(pos, annotations[i])) { annoCanvas.style.cursor = 'move'; return; }
+  }
+  annoCanvas.style.cursor = drawMode ? 'crosshair' : 'default';
+}
+
+function onUp(e) {
+  if (isDrawing) {
+    const a = annotations[selectedAnno];
+    if (Math.abs(a.w) < 4 && Math.abs(a.h) < 4) { annotations.pop(); selectedAnno = -1; }
+    updateAnnoList();
+  }
+  if (isDragging) updateAnnoList();
+  isDrawing = false; isDragging = false; isResizing = false; resizeHandle = null;
+  drawAnnotations();
+}
+
+// Draw mode toggle
+$('drawModeBtn').addEventListener('click', () => {
+  drawMode = !drawMode;
+  $('drawModeBtn').classList.toggle('active', drawMode);
+  $('drawModeBtn').innerHTML = drawMode
+    ? '<i class="ti ti-rectangle" aria-hidden="true"></i> Draw rectangle'
+    : '<i class="ti ti-pointer" aria-hidden="true"></i> Select mode';
+  annoCanvas.style.cursor = drawMode ? 'crosshair' : 'default';
+});
+
+$('clearAnnoBtn').addEventListener('click', () => {
+  annotations = []; selectedAnno = -1; drawAnnotations(); updateAnnoList();
+});
+
+// Annotation color/stroke sync
+$('annoColor').addEventListener('input', () => {
+  $('annoColorHex').value = $('annoColor').value;
+  if (selectedAnno >= 0) { annotations[selectedAnno].color = $('annoColor').value; drawAnnotations(); }
+});
+$('annoColorHex').addEventListener('input', () => {
+  const v = $('annoColorHex').value;
+  if (/^#[0-9a-fA-F]{6}$/.test(v)) { $('annoColor').value = v; if (selectedAnno >= 0) { annotations[selectedAnno].color = v; drawAnnotations(); } }
+});
+$('annoStroke').addEventListener('input', () => {
+  $('annoStrokeVal').textContent = $('annoStroke').value + 'px';
+  if (selectedAnno >= 0) { annotations[selectedAnno].stroke = parseInt($('annoStroke').value); drawAnnotations(); }
+});
+
+// --- Image loading ---
 function loadImage(file) {
   const reader = new FileReader();
   reader.onload = e => {
@@ -586,7 +688,9 @@ function loadImage(file) {
     image.onload = () => {
       img = image;
       $('dropZone').style.display = 'none';
-      $('outputCanvas').style.display = 'block';
+      $('canvasStack').style.display = 'inline-block';
+      annotations = []; selectedAnno = -1; updateAnnoList();
+      annoCanvas.style.cursor = 'crosshair';
       render();
     };
     image.src = e.target.result;
@@ -596,47 +700,49 @@ function loadImage(file) {
 
 $('uploadBtn').addEventListener('click', () => $('fileInput').click());
 $('fileInput').addEventListener('change', e => { if (e.target.files[0]) loadImage(e.target.files[0]); });
-
 const dz = $('dropZone');
 dz.addEventListener('click', () => $('fileInput').click());
 dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
 dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
-dz.addEventListener('drop', e => {
-  e.preventDefault();
-  dz.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
-});
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]); });
 
+// --- Export (merge both canvases) ---
 $('exportBtn').addEventListener('click', () => {
   if (!img) return;
-  const a = document.createElement('a');
-  a.download = 'branded-image.png';
-  a.href = $('outputCanvas').toDataURL('image/png');
-  a.click();
-});
-
-document.querySelectorAll('.preset-btn').forEach(btn => {
-  btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
-});
-
-const sliders = ['radius','padding','borderWidth','borderOpacity','bgOpacity','shadowBlur','shadowAngle','shadowOffset','shadowOpacity'];
-sliders.forEach(id => {
-  $(id).addEventListener('input', () => {
-    const isPct = ['bgOpacity','borderOpacity','shadowOpacity'].includes(id);
-    const isDeg = id === 'shadowAngle';
-    const unit = isPct ? '%' : isDeg ? 'deg' : 'px';
-    $(id + 'Val').textContent = $(id).value + unit;
-    render();
+  const out = $('outputCanvas');
+  const merge = document.createElement('canvas');
+  merge.width = out.width; merge.height = out.height;
+  const ctx = merge.getContext('2d');
+  ctx.drawImage(out, 0, 0);
+  // Draw annotations directly (not from display canvas — use actual coords)
+  annotations.forEach(a => {
+    const {x,y,w,h} = normalizeRect(a);
+    ctx.save();
+    ctx.strokeStyle = a.color; ctx.lineWidth = a.stroke;
+    ctx.strokeRect(x, y, w, h);
+    ctx.restore();
   });
+  const link = document.createElement('a');
+  link.download = 'branded-image.png';
+  link.href = merge.toDataURL('image/png');
+  link.click();
+});
+
+// --- Sliders ---
+document.querySelectorAll('.preset-btn').forEach(btn => btn.addEventListener('click', () => applyPreset(btn.dataset.preset)));
+
+const sliderDefs = [
+  ['radius','px'],['padding','px'],['borderWidth','px'],['borderOpacity','%'],
+  ['bgOpacity','%'],['shadowBlur','px'],['shadowAngle','deg'],['shadowOffset','px'],['shadowOpacity','%']
+];
+sliderDefs.forEach(([id, unit]) => {
+  $(id).addEventListener('input', () => { $(id+'Val').textContent = $(id).value + unit; render(); });
 });
 
 ['bgColor','borderColor'].forEach(id => {
-  $(id).addEventListener('input', () => {
-    $(id + 'Hex').value = $(id).value;
-    render();
-  });
-  $(id + 'Hex').addEventListener('input', () => {
-    const v = $(id + 'Hex').value;
+  $(id).addEventListener('input', () => { $(id+'Hex').value = $(id).value; render(); });
+  $(id+'Hex').addEventListener('input', () => {
+    const v = $(id+'Hex').value;
     if (/^#[0-9a-fA-F]{6}$/.test(v)) { $(id).value = v; render(); }
   });
 });
@@ -645,7 +751,6 @@ $('shadowEnabled').addEventListener('change', () => {
   $('shadowControls').style.opacity = $('shadowEnabled').checked ? '1' : '0.4';
   render();
 });
-
 $('aspectRatio').addEventListener('change', render);
 $('fitMode').addEventListener('change', render);
 
